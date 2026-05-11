@@ -90,6 +90,13 @@
     .user-info strong {
         color: #f43;
     }
+    .info {
+    background: #0d0d0d;
+    border-right: 3px solid #f0ad4e;
+    padding: 10px;
+    margin-bottom: 20px;
+    color: #f0ad4e;
+    }
 </style>
 @endpush
 
@@ -106,6 +113,10 @@
         <div class="success">{{ session('success') }}</div>
     @endif
     
+    @if(session('info'))
+    <div class="info">{{ session('info') }}</div>
+    @endif
+
     @if(session('error'))
         <div class="error">{{ session('error') }}</div>
     @endif

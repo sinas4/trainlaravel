@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Middleware\CustomAuthCheck;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -18,6 +17,7 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
+
         return view('auth.dashboard', compact('user'));
     }
 
@@ -32,6 +32,12 @@ class DashboardController extends Controller
             'name.min' => 'نام باید حداقل ۳ کاراکتر باشد',
         ]);
 
+        // چک کن اگه اسم تغییر نکرده
+        if ($user->name === $request->name) {
+            return back()->with('info', 'هیچ تغییری در نام شما اعمال نشد');
+        }
+
+        // فقط اگه تغییر کرده بود، آپدیت کن
         $user->update([
             'name' => $request->name,
         ]);
@@ -54,7 +60,7 @@ class DashboardController extends Controller
         ]);
 
         // چک کردن رمز فعلی
-        if (!Hash::check($request->current_password, $user->password)) {
+        if (! Hash::check($request->current_password, $user->password)) {
             return back()->with('error', 'رمز فعلی اشتباه است');
         }
 
