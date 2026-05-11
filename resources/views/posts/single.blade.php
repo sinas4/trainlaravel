@@ -17,6 +17,7 @@
                 <div class="post-meta">
                     <span>📅 {{ $post->created_at }}</span>
                     <span>🏷️ {{ $post->category ?? 'دسته‌بندی نشده' }}</span>
+                    <span>🧒🏼{{ $post->user->name ?? 'ناشناس' }}</span>
                 </div>
             </div>
 
