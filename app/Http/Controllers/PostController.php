@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 class PostController extends Controller
@@ -11,8 +12,7 @@ class PostController extends Controller
 
     public function index()
     {
-        $posts = Post::orderBy('id', 'desc')->get();
-
+        $posts = Post::with('user')->latest()->get();
         return view('posts.index', compact('posts'));
     }
 
@@ -25,23 +25,27 @@ class PostController extends Controller
 
 
 
-    public function store(Request $request)
-    {
-        // validation
-        $validatedData = $request->validate([
-            'title' => 'required|min:3',
-            'description' => 'required',
-        ]);
-        $inserted = Post::create([
-            'user_id' => '2',
-            ...$validatedData,
-        ]);
-        if ($inserted) {
-            return redirect()->route('posts.index')->with('success', 'پست با موفقیت ایجاد شد');
-        } else {
-            return back()->with('error', 'خطا در ذخیره پست');
-        }
+ public function store(Request $request)
+{
+    // validation
+    $validatedData = $request->validate([
+        'title' => 'required|min:3',
+        'description' => 'required',
+    ]);
+    
+    $inserted = Post::create([
+        'user_id' => Auth::id(),  // ← کاربر وارد شده
+        'title' => $validatedData['title'],
+        'description' => $validatedData['description'],
+        'slug' => \Illuminate\Support\Str::slug($validatedData['title'])
+    ]);
+    
+    if ($inserted) {
+        return redirect()->route('posts.index')->with('success', 'پست با موفقیت ایجاد شد');
+    } else {
+        return back()->with('error', 'خطا در ذخیره پست');
     }
+}
 
 
 
